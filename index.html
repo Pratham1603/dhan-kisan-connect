@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dhan-kisan-connect</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
+    <title>Smart Crop Advisory System - AI-Powered Farming Solutions</title>
+    <meta name="description" content="Empower your farming with AI-driven insights, real-time weather updates, and expert guidance. Smart farming solutions for modern agriculture." />
+    <meta name="author" content="Smart Crop Advisory" />
 
-    <meta property="og:title" content="dhan-kisan-connect" />
-    <meta property="og:description" content="Lovable Generated Project" />
+    <meta property="og:title" content="Smart Crop Advisory System - AI-Powered Farming Solutions" />
+    <meta property="og:description" content="Empower your farming with AI-driven insights, real-time weather updates, and expert guidance. Smart farming solutions for modern agriculture." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
@@ -20,5 +20,19 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <link rel="manifest" href="/manifest.json">
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/src/serviceWorker.ts')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
