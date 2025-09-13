@@ -41,11 +41,11 @@ const Header = () => {
 
   const navigationItems = [
     { href: "/", icon: Home, label: t("nav.home") },
-    { href: "/pest-detection", icon: Bug, label: "Features" },
+    { href: "/features", icon: Bug, label: "Features" },
     { href: "/weather", icon: Cloud, label: t("nav.weather") },
     { href: "/market-prices", icon: TrendingUp, label: "Market" },
     { href: "/farm-diary", icon: BookOpen, label: "Diary" },
-    { href: "/feedback", icon: MessageSquare, label: "Contact" },
+    { href: "/contact", icon: MessageSquare, label: "Contact" },
   ];
 
   const languages: { code: Language; name: string; flag: string }[] = [
