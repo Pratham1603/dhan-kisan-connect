@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { 
   Cloud, 
   Sun, 
@@ -12,11 +12,15 @@ import {
   Wind,
   Eye,
   AlertTriangle,
-  MapPin
+  MapPin,
+  Navigation,
+  Loader2
 } from "lucide-react";
 
 const Weather = () => {
   const [location, setLocation] = useState("");
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [locationError, setLocationError] = useState("");
   const [weatherData, setWeatherData] = useState({
     current: {
       temperature: 28,
@@ -43,6 +47,51 @@ const Weather = () => {
     ]
   });
 
+  useEffect(() => {
+    // Auto-detect location on page load
+    detectLocation();
+  }, []);
+
+  const detectLocation = () => {
+    setIsLoadingLocation(true);
+    setLocationError("");
+    
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          try {
+            // In a real app, you would call OpenWeatherMap API here
+            // For demo, we'll just set a mock location
+            setLocation(`Lat: ${latitude.toFixed(2)}, Long: ${longitude.toFixed(2)}`);
+            // Simulate API call
+            setTimeout(() => {
+              setWeatherData(prev => ({
+                ...prev,
+                current: {
+                  ...prev.current,
+                  temperature: 29,
+                  condition: "Clear Sky"
+                }
+              }));
+              setIsLoadingLocation(false);
+            }, 2000);
+          } catch (error) {
+            setLocationError("Failed to fetch weather data");
+            setIsLoadingLocation(false);
+          }
+        },
+        (error) => {
+          setLocationError("Please enable location to see weather updates");
+          setIsLoadingLocation(false);
+        }
+      );
+    } else {
+      setLocationError("Geolocation is not supported by this browser");
+      setIsLoadingLocation(false);
+    }
+  };
+
   const getWeatherIcon = (iconType: string) => {
     switch (iconType) {
       case "sunny": return <Sun className="h-8 w-8 text-yellow-500" />;
@@ -54,45 +103,105 @@ const Weather = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4 text-gradient">
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <section className="bg-primary text-primary-foreground py-20">
+        <div className="container mx-auto px-4 text-center">
+          <motion.h1 
+            className="text-4xl md:text-5xl font-bold mb-6"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
             Weather Insights
-          </h1>
-          <p className="text-xl text-muted-foreground">
-            Real-time weather updates and agricultural forecasts
-          </p>
+          </motion.h1>
+          <motion.p 
+            className="text-xl mb-8 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            Real-time weather updates and agricultural forecasts powered by GPS
+          </motion.p>
         </div>
+      </section>
 
-        {/* Location Input */}
-        <Card className="mb-8 card-hover">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <MapPin className="h-6 w-6 text-primary" />
-              <span>Location</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex space-x-2">
-              <div className="flex-1">
-                <Label htmlFor="location">Enter your location</Label>
-                <Input
-                  id="location"
-                  placeholder="City, District, State"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                />
+      <div className="container mx-auto px-4 py-16">
+        {/* Location Detection */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8"
+        >
+          <Card className="card-hover">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Navigation className="h-6 w-6 text-primary" />
+                <span>Location Detection</span>
+              </CardTitle>
+              <CardDescription>
+                Automatically detect your location for accurate weather data
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col sm:flex-row gap-4 items-center">
+                <div className="flex-1">
+                  {isLoadingLocation ? (
+                    <div className="flex items-center space-x-2 text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Detecting your location...</span>
+                    </div>
+                  ) : location ? (
+                    <div className="flex items-center space-x-2">
+                      <MapPin className="h-4 w-4 text-primary" />
+                      <span className="font-medium">{location}</span>
+                      <Badge variant="outline" className="text-green-600">
+                        GPS Active
+                      </Badge>
+                    </div>
+                  ) : (
+                    <div className="text-muted-foreground">
+                      {locationError || "Location not detected"}
+                    </div>
+                  )}
+                </div>
+                <Button 
+                  onClick={detectLocation}
+                  disabled={isLoadingLocation}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  {isLoadingLocation ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Detecting...
+                    </>
+                  ) : (
+                    <>
+                      <Navigation className="h-4 w-4 mr-2" />
+                      Detect Location
+                    </>
+                  )}
+                </Button>
               </div>
-              <div className="flex items-end">
-                <Button className="btn-hero">Get Weather</Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              
+              {locationError && (
+                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-700 text-sm">{locationError}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
 
         {/* Current Weather */}
-        <Card className="mb-8 card-hover">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mb-8"
+        >
+          <Card className="card-hover">
           <CardHeader>
             <CardTitle>Current Weather</CardTitle>
             <CardDescription>Real-time conditions in your area</CardDescription>
@@ -143,10 +252,16 @@ const Weather = () => {
             </div>
           </CardContent>
         </Card>
+        </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-8 mb-8">
           {/* 5-Day Forecast */}
-          <Card className="card-hover">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <Card className="card-hover h-full">
             <CardHeader>
               <CardTitle>5-Day Forecast</CardTitle>
               <CardDescription>Extended weather outlook</CardDescription>
@@ -171,9 +286,15 @@ const Weather = () => {
               </div>
             </CardContent>
           </Card>
+          </motion.div>
 
           {/* Weather Alerts */}
-          <Card className="card-hover">
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
+            <Card className="card-hover h-full">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <AlertTriangle className="h-6 w-6 text-warning" />
@@ -207,10 +328,16 @@ const Weather = () => {
               </div>
             </CardContent>
           </Card>
+          </motion.div>
         </div>
 
         {/* Agricultural Insights */}
-        <Card className="mt-8 card-hover">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+        >
+          <Card className="card-hover">
           <CardHeader>
             <CardTitle>Agricultural Weather Insights</CardTitle>
             <CardDescription>Weather-based farming recommendations</CardDescription>
@@ -241,8 +368,9 @@ const Weather = () => {
                 </p>
               </div>
             </div>
-          </CardContent>
+            </CardContent>
         </Card>
+        </motion.div>
       </div>
     </div>
   );

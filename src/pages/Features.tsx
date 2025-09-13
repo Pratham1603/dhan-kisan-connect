@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import DiagnosisResult from "@/components/DiagnosisResult";
 import { 
   Bug, 
   Sprout, 
@@ -19,6 +20,35 @@ import {
 
 const Features = () => {
   const [activeTab, setActiveTab] = useState("pest-detection");
+  const [diagnosisResult, setDiagnosisResult] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  const handleDiagnosis = () => {
+    setIsAnalyzing(true);
+    // Simulate API call
+    setTimeout(() => {
+      setDiagnosisResult({
+        disease: "Early Blight (Alternaria solani)",
+        confidence: 87,
+        severity: "Moderate",
+        treatment: "Apply copper-based fungicide immediately. Remove affected leaves and improve air circulation around plants.",
+        prevention: "Ensure proper spacing between plants, avoid overhead watering, and rotate crops annually. Apply preventive fungicide during humid conditions.",
+        symptoms: ["Brown spots with concentric rings", "Yellowing leaves", "Leaf drop"],
+        organicTreatment: "Spray with neem oil solution (2-3ml per liter water) every 7 days. Use baking soda spray (1 tsp per liter) as preventive measure.",
+        timeToRecover: "7-14 days with proper treatment"
+      });
+      setIsAnalyzing(false);
+    }, 3000);
+  };
+
+  const handleSaveToDiary = () => {
+    // Implement save to diary logic
+    alert("Diagnosis saved to Farm Diary!");
+  };
+
+  const handleNewDiagnosis = () => {
+    setDiagnosisResult(null);
+  };
 
   const pestData = [
     {
@@ -194,13 +224,24 @@ const Features = () => {
                       />
                     </div>
                     
-                    <Button className="w-full bg-primary hover:bg-primary/90">
-                      Get Diagnosis
+                    <Button 
+                      className="w-full bg-primary hover:bg-primary/90"
+                      onClick={handleDiagnosis}
+                      disabled={isAnalyzing}
+                    >
+                      {isAnalyzing ? "Analyzing..." : "Get Diagnosis"}
                     </Button>
                   </CardContent>
                 </Card>
               </motion.div>
             </div>
+
+            {/* Diagnosis Results */}
+            <DiagnosisResult
+              result={diagnosisResult}
+              onSaveToDiary={handleSaveToDiary}
+              onNewDiagnosis={handleNewDiagnosis}
+            />
 
             {/* Common Pests Section */}
             <motion.div

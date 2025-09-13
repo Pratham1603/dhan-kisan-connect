@@ -82,79 +82,94 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden lg:flex items-center space-x-6">
             {navigationItems.map((item) => (
               <Link
                 key={item.href}
                 to={item.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
+                className={`text-sm font-medium transition-colors hover:text-primary relative ${
                   isActive(item.href)
                     ? "text-primary"
                     : "text-foreground"
                 }`}
               >
                 {item.label}
+                {isActive(item.href) && (
+                  <motion.div
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
+                    layoutId="navbar-indicator"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
               </Link>
             ))}
           </div>
 
           {/* Right side controls */}
-          <div className="flex items-center space-x-4">
-            {/* Language Selector */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8">
-                  <Globe className="h-4 w-4 mr-1" />
-                  {languages.find(l => l.code === language)?.flag}
-                  <ChevronDown className="h-3 w-3 ml-1" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-card border-border">
-                {languages.map((lang) => (
-                  <DropdownMenuItem
-                    key={lang.code}
-                    onClick={() => setLanguage(lang.code)}
-                    className="cursor-pointer"
-                  >
-                    <span className="mr-2">{lang.flag}</span>
-                    {lang.name}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
+          <div className="flex items-center space-x-3">
             {/* CTA Button */}
-            <Button className="hidden md:flex bg-primary hover:bg-primary/90 text-white">
+            <Button className="hidden lg:flex bg-primary hover:bg-primary/90 text-white px-6">
               Ask Kisan Sahayak
             </Button>
 
             {/* Mobile Menu */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="sm" className="md:hidden">
-                  <Menu className="h-4 w-4" />
+                <Button variant="ghost" size="sm" className="lg:hidden">
+                  <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-80 bg-white">
-                <div className="flex flex-col space-y-6 mt-8">
+              <SheetContent side="right" className="w-80 bg-background border-l">
+                <div className="flex flex-col space-y-4 mt-8">
                   {navigationItems.map((item) => {
                     const Icon = item.icon;
                     return (
-                      <Link
+                      <motion.div
                         key={item.href}
-                        to={item.href}
-                        onClick={() => setIsOpen(false)}
-                        className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-lg font-medium transition-colors ${
-                          isActive(item.href)
-                            ? "bg-primary text-white"
-                            : "text-foreground hover:bg-muted"
-                        }`}
+                        whileHover={{ x: 5 }}
+                        whileTap={{ scale: 0.95 }}
                       >
-                        <Icon className="h-5 w-5" />
-                        <span>{item.label}</span>
-                      </Link>
+                        <Link
+                          to={item.href}
+                          onClick={() => setIsOpen(false)}
+                          className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-lg font-medium transition-all duration-200 ${
+                            isActive(item.href)
+                              ? "bg-primary text-white shadow-lg"
+                              : "text-foreground hover:bg-muted hover:shadow-md"
+                          }`}
+                        >
+                          <Icon className="h-5 w-5" />
+                          <span>{item.label}</span>
+                        </Link>
+                      </motion.div>
                     );
                   })}
+                  
+                  {/* Language selector in mobile */}
+                  <div className="px-4 py-2">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-full justify-start">
+                          <Globe className="h-4 w-4 mr-2" />
+                          {languages.find(l => l.code === language)?.flag} {languages.find(l => l.code === language)?.name}
+                          <ChevronDown className="h-3 w-3 ml-auto" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-56">
+                        {languages.map((lang) => (
+                          <DropdownMenuItem
+                            key={lang.code}
+                            onClick={() => setLanguage(lang.code)}
+                            className="cursor-pointer"
+                          >
+                            <span className="mr-2">{lang.flag}</span>
+                            {lang.name}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                  
                   <Button className="mx-4 mt-4 bg-primary hover:bg-primary/90 text-white">
                     Ask Kisan Sahayak
                   </Button>
