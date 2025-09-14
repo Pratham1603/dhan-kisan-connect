@@ -128,7 +128,7 @@ const Home = () => {
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-6 rounded-xl">
+                <Button size="lg" className="bg-primary text-white border border-primary hover:bg-primary/90 hover:shadow-lg transition-all duration-300 text-lg px-8 py-6 rounded-xl font-semibold">
                   <Play className="mr-2 h-5 w-5" />
                   Watch Demo
                 </Button>
@@ -267,7 +267,7 @@ const Home = () => {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-6 rounded-xl">
+              <Button size="lg" className="bg-primary text-white border border-primary hover:bg-primary/90 hover:shadow-lg hover:scale-105 transition-all duration-300 text-lg px-8 py-6 rounded-xl font-semibold">
                 Watch Success Stories
               </Button>
             </div>
