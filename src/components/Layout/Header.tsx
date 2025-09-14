@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { 
   Menu, 
   Home, 
@@ -13,15 +15,12 @@ import {
   MessageSquare,
   Settings,
   Globe,
-  ChevronDown
+  ChevronDown,
+  User,
+  LogOut
 } from "lucide-react";
 import { useLanguage, Language } from "@/contexts/LanguageContext";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 
 const Header = () => {
@@ -29,6 +28,7 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const { language, setLanguage, t } = useLanguage();
+  const { user, userProfile, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,6 +58,12 @@ const Header = () => {
   const isActive = (href: string) => {
     if (href === "/") return location.pathname === "/";
     return location.pathname.startsWith(href);
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      ? name.split(' ').map(n => n[0]).join('').toUpperCase()
+      : 'U';
   };
 
   return (
@@ -107,10 +113,64 @@ const Header = () => {
 
           {/* Right side controls */}
           <div className="flex items-center space-x-3">
-            {/* CTA Button */}
-            <Button className="hidden lg:flex bg-primary hover:bg-primary/90 text-white px-6">
-              Ask Kisan Sahayak
-            </Button>
+            {/* Authentication Section */}
+            {user ? (
+              <div className="flex items-center space-x-3">
+                {/* CTA Button for authenticated users */}
+                <Button className="hidden lg:flex bg-primary hover:bg-primary/90 text-white px-6">
+                  Ask Kisan Sahayak
+                </Button>
+                
+                {/* Profile Dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                      <Avatar className="h-10 w-10">
+                        <AvatarFallback className="bg-primary text-white">
+                          {getInitials(userProfile?.full_name || user.email || '')}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <div className="flex flex-col space-y-1 p-2">
+                      <p className="text-sm font-medium leading-none">
+                        {userProfile?.full_name || 'User'}
+                      </p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user.email}
+                      </p>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      className="cursor-pointer text-red-600"
+                      onClick={signOut}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ) : (
+              <div className="hidden lg:flex items-center space-x-2">
+                <Link to="/auth">
+                  <Button variant="outline" className="border-primary text-primary hover:bg-primary/5">
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/auth">
+                  <Button className="bg-primary hover:bg-primary/90 text-white">
+                    Sign Up
+                  </Button>
+                </Link>
+              </div>
+            )}
 
             {/* Mobile Menu */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -121,6 +181,52 @@ const Header = () => {
               </SheetTrigger>
               <SheetContent side="right" className="w-80 bg-background border-l">
                 <div className="flex flex-col space-y-4 mt-8">
+                  {/* Mobile Auth Section */}
+                  {user ? (
+                    <div className="px-4 py-3 border-b">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="h-10 w-10">
+                          <AvatarFallback className="bg-primary text-white">
+                            {getInitials(userProfile?.full_name || user.email || '')}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-sm font-medium">
+                            {userProfile?.full_name || 'User'}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {user.email}
+                          </p>
+                        </div>
+                      </div>
+                      <Button 
+                        variant="destructive" 
+                        size="sm" 
+                        className="w-full mt-3"
+                        onClick={() => {
+                          signOut();
+                          setIsOpen(false);
+                        }}
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Logout
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="px-4 py-3 space-y-2 border-b">
+                      <Link to="/auth" onClick={() => setIsOpen(false)}>
+                        <Button variant="outline" className="w-full border-primary text-primary">
+                          Login
+                        </Button>
+                      </Link>
+                      <Link to="/auth" onClick={() => setIsOpen(false)}>
+                        <Button className="w-full bg-primary hover:bg-primary/90 text-white">
+                          Sign Up
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
+
                   {navigationItems.map((item) => {
                     const Icon = item.icon;
                     return (
@@ -170,9 +276,11 @@ const Header = () => {
                     </DropdownMenu>
                   </div>
                   
-                  <Button className="mx-4 mt-4 bg-primary hover:bg-primary/90 text-white">
-                    Ask Kisan Sahayak
-                  </Button>
+                  {user && (
+                    <Button className="mx-4 mt-4 bg-primary hover:bg-primary/90 text-white">
+                      Ask Kisan Sahayak
+                    </Button>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>
