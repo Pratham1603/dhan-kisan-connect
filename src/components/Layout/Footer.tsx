@@ -54,7 +54,7 @@ const Footer = () => {
       </Button>
 
       <div className="container mx-auto px-4 py-16">
-        <div className="grid md:grid-cols-3 gap-12 justify-items-center md:justify-items-start">
+        <div className="grid md:grid-cols-4 gap-8 justify-items-center md:justify-items-start">
           {/* Brand Section */}
           <motion.div 
             className="space-y-4"
@@ -108,6 +108,36 @@ const Footer = () => {
             </ul>
           </motion.div>
 
+          {/* Services */}
+          <motion.div 
+            className="space-y-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            viewport={{ once: true }}
+          >
+            <h3 className="text-lg font-semibold text-primary">Services</h3>
+            <ul className="space-y-2">
+              <li>
+                <span className="text-gray-300 text-sm">Crop Disease Detection</span>
+              </li>
+              <li>
+                <span className="text-gray-300 text-sm">Weather Forecasting</span>
+              </li>
+              <li>
+                <span className="text-gray-300 text-sm">Market Price Analysis</span>
+              </li>
+              <li>
+                <span className="text-gray-300 text-sm">Farm Management</span>
+              </li>
+              <li>
+                <span className="text-gray-300 text-sm">Expert Consultation</span>
+              </li>
+              <li>
+                <span className="text-gray-300 text-sm">24/7 AI Support</span>
+              </li>
+            </ul>
+          </motion.div>
 
           {/* Contact Info */}
           <motion.div 
