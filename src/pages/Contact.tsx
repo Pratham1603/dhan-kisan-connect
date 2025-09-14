@@ -116,7 +116,7 @@ const Contact = () => {
                   <MapPin className="h-5 w-5 text-primary" />
                   <div>
                     <p className="font-medium">Address</p>
-                    <p className="text-muted-foreground">123 Agriculture Hub, Mumbai, Maharashtra, India</p>
+                    <p className="text-muted-foreground">Mumbai, Maharashtra, India</p>
                   </div>
                 </div>
 
