@@ -6,8 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Sprout, Mail, Lock, User, Phone } from "lucide-react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import { Sprout, Mail, Lock, User, Phone, ArrowLeft } from "lucide-react";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -122,6 +122,14 @@ const Auth = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/10 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
+          <div className="flex items-center justify-between">
+            <Link to="/">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Home
+              </Button>
+            </Link>
+          </div>
           <div className="flex items-center justify-center gap-2">
             <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
               <Sprout className="h-6 w-6 text-white" />
