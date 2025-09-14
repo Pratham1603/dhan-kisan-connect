@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-farming-aerial.jpg";
+import { processImageFromSrc } from "@/utils/backgroundRemoval";
 import { 
   Bug, 
   Sprout, 
@@ -22,6 +23,22 @@ import { motion } from "framer-motion";
 
 const Home = () => {
   const { t } = useLanguage();
+  const [processedImage, setProcessedImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const processImage = async () => {
+      try {
+        const transparentImage = await processImageFromSrc(heroImage);
+        setProcessedImage(transparentImage);
+      } catch (error) {
+        console.error('Failed to process image:', error);
+        // Fallback to original image
+        setProcessedImage(heroImage);
+      }
+    };
+
+    processImage();
+  }, []);
 
   const features = [
     {
@@ -81,11 +98,11 @@ const Home = () => {
           transition={{ duration: 1.5, ease: "easeOut" }}
         >
           <img 
-            src={heroImage} 
+            src={processedImage || heroImage} 
             alt="Smart farming with technology"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 hero-gradient opacity-90"></div>
+          <div className="absolute inset-0 hero-gradient opacity-70"></div>
         </motion.div>
 
         {/* Hero Content */}
