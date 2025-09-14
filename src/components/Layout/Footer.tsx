@@ -87,24 +87,25 @@ const Footer = () => {
 
           {/* Quick Links */}
           <motion.div 
-            className="space-y-4 flex flex-col items-center"
+            className="space-y-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             viewport={{ once: true }}
           >
-            <h3 className="text-lg font-semibold text-primary text-center">Quick Links</h3>
-            <div className="grid grid-cols-2 gap-x-8 gap-y-3 max-w-xs">
+            <h3 className="text-lg font-semibold text-primary">Quick Links</h3>
+            <ul className="space-y-2">
               {quickLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  to={link.href}
-                  className="text-gray-300 hover:text-primary transition-colors text-base text-center"
-                >
-                  {link.label}
-                </Link>
+                <li key={link.href}>
+                  <Link
+                    to={link.href}
+                    className="text-gray-300 hover:text-primary transition-colors text-sm"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           </motion.div>
 
 
