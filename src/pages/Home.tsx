@@ -63,7 +63,7 @@ const Home = () => {
   ];
 
   const stats = [
-    { icon: Users, value: "50,000+", label: "Active Farmers" },
+    { icon: Users, value: "25,000+", label: "Registered Users" },
     { icon: Smartphone, value: "99%", label: "Mobile Optimized" },
     { icon: Shield, value: "24/7", label: "Support Available" },
     { icon: BarChart3, value: "95%", label: "Accuracy Rate" },
