@@ -108,7 +108,7 @@ const Contact = () => {
                   <Mail className="h-5 w-5 text-primary" />
                   <div>
                     <p className="font-medium">Email</p>
-                    <p className="text-muted-foreground">support@cropadvisory.com</p>
+                    <p className="text-muted-foreground">support@krishimarg.in</p>
                   </div>
                 </div>
                 
@@ -178,7 +178,7 @@ const Contact = () => {
                       <Input
                         id="email"
                         type="email"
-                        placeholder="your.email@example.com"
+                        placeholder="your.email@krishimarg.in"
                         value={formData.email}
                         onChange={(e) => handleInputChange("email", e.target.value)}
                         required

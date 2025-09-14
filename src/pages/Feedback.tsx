@@ -188,7 +188,7 @@ const Feedback = () => {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="your.email@example.com"
+                    placeholder="your.email@krishimarg.in"
                     value={feedback.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
                   />
@@ -243,7 +243,7 @@ const Feedback = () => {
                 
                 <div>
                   <h5 className="font-medium">Email Support</h5>
-                  <p className="text-sm text-muted-foreground">✉️ support@smartcrop.com</p>
+                  <p className="text-sm text-muted-foreground">✉️ support@krishimarg.in</p>
                 </div>
                 
                 <div>
