@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Auth from "./pages/Auth";
 import Home from "./pages/Home";
 import Features from "./pages/Features";
@@ -13,9 +14,10 @@ import MarketPrices from "./pages/MarketPrices";
 import FarmDiary from "./pages/FarmDiary";
 import Contact from "./pages/Contact";
 import AdminDashboard from "./pages/AdminDashboard";
+import PestDetection from "./pages/PestDetection";
+import SoilHealth from "./pages/SoilHealth";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout/Layout";
-import ChatBot from "./components/ChatBot/ChatBot";
 
 const queryClient = new QueryClient();
 
@@ -28,16 +30,57 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            {/* Public Routes */}
             <Route path="/auth" element={<Auth />} />
+            
+            {/* Routes with Layout */}
             <Route path="/" element={<Layout />}>
+              {/* Public Home Page */}
               <Route index element={<Home />} />
-              <Route path="features" element={<Features />} />
-              <Route path="weather" element={<Weather />} />
-              <Route path="market-prices" element={<MarketPrices />} />
-              <Route path="farm-diary" element={<FarmDiary />} />
-              <Route path="contact" element={<Contact />} />
-              <Route path="admin" element={<AdminDashboard />} />
+              
+              {/* Protected Routes */}
+              <Route path="features" element={
+                <ProtectedRoute>
+                  <Features />
+                </ProtectedRoute>
+              } />
+              <Route path="weather" element={
+                <ProtectedRoute>
+                  <Weather />
+                </ProtectedRoute>
+              } />
+              <Route path="market-prices" element={
+                <ProtectedRoute>
+                  <MarketPrices />
+                </ProtectedRoute>
+              } />
+              <Route path="farm-diary" element={
+                <ProtectedRoute>
+                  <FarmDiary />
+                </ProtectedRoute>
+              } />
+              <Route path="pest-detection" element={
+                <ProtectedRoute>
+                  <PestDetection />
+                </ProtectedRoute>
+              } />
+              <Route path="soil-health" element={
+                <ProtectedRoute>
+                  <SoilHealth />
+                </ProtectedRoute>
+              } />
+              <Route path="contact" element={
+                <ProtectedRoute>
+                  <Contact />
+                </ProtectedRoute>
+              } />
+              <Route path="admin" element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } />
             </Route>
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

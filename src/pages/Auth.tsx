@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Sprout, Mail, Lock, User, Phone } from "lucide-react";
 
 const Auth = () => {
@@ -23,13 +23,17 @@ const Auth = () => {
 
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get the page user was trying to access before being redirected to login
+  const from = location.state?.from?.pathname || '/';
 
   useEffect(() => {
-    // Redirect authenticated users to home
+    // Redirect authenticated users to the page they were trying to access or home
     if (user) {
-      navigate('/');
+      navigate(from, { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, navigate, from]);
 
   const validateForm = () => {
     const newErrors: any = {};
@@ -79,7 +83,7 @@ const Auth = () => {
       if (isLogin) {
         const { error } = await signIn(formData.email, formData.password);
         if (!error) {
-          navigate('/');
+          // Navigation will be handled by useEffect when user state updates
         }
       } else {
         const { error } = await signUp(
