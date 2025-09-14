@@ -51,7 +51,7 @@ const Footer = () => {
       {/* Scroll to top button */}
       <Button
         onClick={scrollToTop}
-        className="fixed bottom-6 right-6 z-40 bg-primary hover:bg-primary/90 text-white rounded-full p-3 shadow-lg"
+        className="fixed bottom-24 right-6 z-40 bg-primary hover:bg-primary/90 text-white rounded-full p-3 shadow-lg"
         size="sm"
       >
         <ArrowUp className="h-4 w-4" />
