@@ -84,8 +84,8 @@ const MarketPrices = () => {
                   <SelectContent>
                     <SelectItem value="rice">Rice</SelectItem>
                     <SelectItem value="wheat">Wheat</SelectItem>
-                    <SelectItem value="maize">Maize 🌽</SelectItem>
-                    <SelectItem value="soybean">Soybean 🌱</SelectItem>
+                    <SelectItem value="maize">Maize</SelectItem>
+                    <SelectItem value="soybean">Soybean</SelectItem>
                     <SelectItem value="sugarcane">Sugarcane</SelectItem>
                     <SelectItem value="cotton">Cotton</SelectItem>
                     <SelectItem value="onion">Onion</SelectItem>
