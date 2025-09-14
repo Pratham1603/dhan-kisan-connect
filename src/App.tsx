@@ -17,6 +17,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import PestDetection from "./pages/PestDetection";
 import SoilHealth from "./pages/SoilHealth";
 import NotFound from "./pages/NotFound";
+import UserProfile from "./pages/UserProfile";
 import Layout from "./components/Layout/Layout";
 
 const queryClient = new QueryClient();
@@ -77,6 +78,11 @@ const App = () => (
               <Route path="admin" element={
                 <ProtectedRoute>
                   <AdminDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="profile" element={
+                <ProtectedRoute>
+                  <UserProfile />
                 </ProtectedRoute>
               } />
             </Route>
