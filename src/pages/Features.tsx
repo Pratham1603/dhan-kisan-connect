@@ -74,6 +74,30 @@ const Features = () => {
       season: "Rainy season",
       symptoms: "Dark spots, wilting leaves",
       treatment: "Remove affected parts, fungicide spray"
+    },
+    {
+      name: "Pink Bollworm",
+      season: "Kharif Season (June-October)",
+      symptoms: "Pink larvae in cotton bolls, exit holes",
+      treatment: "Bt cotton varieties, pheromone traps"
+    },
+    {
+      name: "Brown Planthopper",
+      season: "Monsoon-Post Monsoon",
+      symptoms: "Yellowing from base, hopperburn symptoms",
+      treatment: "Resistant varieties, drain excess water"
+    },
+    {
+      name: "Fall Armyworm",
+      season: "Rainy Season (July-September)",
+      symptoms: "Whorl damage in maize, characteristic holes",
+      treatment: "Early detection, Spodoptera NPV spray"
+    },
+    {
+      name: "Mustard Aphid",
+      season: "Winter (November-February)",
+      symptoms: "Curled leaves, stunted growth",
+      treatment: "Reflective mulch, sulfur spray"
     }
   ];
 
