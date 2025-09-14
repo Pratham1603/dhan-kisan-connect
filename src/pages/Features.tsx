@@ -119,6 +119,24 @@ const Features = () => {
       ingredients: "Garlic, green chili, water",
       usage: "Spray on affected areas",
       benefits: "Repels aphids and small insects"
+    },
+    {
+      name: "Turmeric-Buttermilk Solution",
+      ingredients: "Turmeric powder, buttermilk, water",
+      usage: "Apply weekly on leaves and soil",
+      benefits: "Antifungal properties, boosts plant immunity"
+    },
+    {
+      name: "Panchagavya Spray",
+      ingredients: "Cow dung, urine, milk, curd, ghee",
+      usage: "Dilute 1:20 and spray fortnightly",
+      benefits: "Growth promoter, disease resistance"
+    },
+    {
+      name: "Tobacco-Soap Solution",
+      ingredients: "Tobacco leaves, soap solution, water",
+      usage: "Soak overnight, strain and spray",
+      benefits: "Effective against sucking pests"
     }
   ];
 
