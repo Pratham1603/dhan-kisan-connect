@@ -99,7 +99,20 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 export const useLanguage = (): LanguageContextType => {
   const context = useContext(LanguageContext);
   if (context === undefined) {
-    throw new Error("useLanguage must be used within a LanguageProvider");
+    if (import.meta.env?.MODE === "development") {
+      // eslint-disable-next-line no-console
+      console.warn("LanguageProvider is missing. Falling back to defaults.");
+    }
+    return {
+      language: "en",
+      setLanguage: () => {
+        if (import.meta.env?.MODE === "development") {
+          // eslint-disable-next-line no-console
+          console.warn("setLanguage called without LanguageProvider. Ignored.");
+        }
+      },
+      t: (key: string) => translations["en"][key] || key,
+    };
   }
   return context;
 };
