@@ -35,11 +35,10 @@ const Footer = () => {
 
 
   const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Youtube, href: "#", label: "YouTube" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
+    { icon: Youtube, href: "https://www.youtube.com/@KrishiMarg-j6u6", label: "YouTube" },
+    { icon: Twitter, href: "https://x.com/KrishiMarg", label: "Twitter" },
+    { icon: Linkedin, href: "https://www.linkedin.com/in/krishimarg-marg-25768b384/", label: "LinkedIn" },
+    { icon: Instagram, href: "https://www.instagram.com/krishimarg2025/", label: "Instagram" },
   ];
 
   return (
@@ -171,6 +170,8 @@ const Footer = () => {
                   <a
                     key={social.label}
                     href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="p-2 bg-gray-800 hover:bg-primary transition-colors rounded-lg"
                     aria-label={social.label}
                   >
