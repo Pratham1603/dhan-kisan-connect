@@ -13,7 +13,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 // Translation dictionary
 const translations: Record<Language, Record<string, string>> = {
   en: {
-    "app.title": "Smart Crop Advisory",
+    "app.title": "KrishiMarg",
     "nav.home": "Home",
     "nav.pestDetection": "Pest Detection",
     "nav.soilHealth": "Soil Health",
@@ -29,7 +29,7 @@ const translations: Record<Language, Record<string, string>> = {
     "chatbot.placeholder": "Ask me anything about farming...",
   },
   hi: {
-    "app.title": "स्मार्ट फसल सलाहकार",
+    "app.title": "कृषिमार्ग",
     "nav.home": "होम",
     "nav.pestDetection": "कीट पहचान",
     "nav.soilHealth": "मिट्टी का स्वास्थ्य",
@@ -45,7 +45,7 @@ const translations: Record<Language, Record<string, string>> = {
     "chatbot.placeholder": "खेती के बारे में कुछ भी पूछें...",
   },
   mr: {
-    "app.title": "स्मार्ट पीक सल्लागार",
+    "app.title": "कृषिमार्ग",
     "nav.home": "होम",
     "nav.pestDetection": "कीड ओळख",
     "nav.soilHealth": "मातीचे आरोग्य",
@@ -61,7 +61,7 @@ const translations: Record<Language, Record<string, string>> = {
     "chatbot.placeholder": "शेतीबद्दल काहीही विचारा...",
   },
   pa: {
-    "app.title": "ਸਮਾਰਟ ਫਸਲ ਸਲਾਹਕਾਰ",
+    "app.title": "ਕ੍ਰਿਸ਼ੀਮਾਰਗ",
     "nav.home": "ਹੋਮ",
     "nav.pestDetection": "ਕੀੜੇ ਦੀ ਪਛਾਣ",
     "nav.soilHealth": "ਮਿੱਟੀ ਦੀ ਸਿਹਤ",

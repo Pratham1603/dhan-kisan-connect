@@ -187,7 +187,7 @@ const Footer = () => {
           viewport={{ once: true }}
         >
           <p className="text-gray-400 text-sm">
-            © 2024 Smart Crop Advisory System. All rights reserved.
+            © 2024 KrishiMarg. All rights reserved.
           </p>
           <div className="flex items-center space-x-4 mt-4 md:mt-0">
             <Globe className="h-4 w-4 text-primary" />
