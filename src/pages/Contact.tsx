@@ -15,7 +15,8 @@ import {
   Twitter,
   Facebook,
   Instagram,
-  Linkedin
+  Linkedin,
+  Youtube
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -135,6 +136,9 @@ const Contact = () => {
                     </Button>
                     <Button variant="outline" size="sm" className="p-2">
                       <Linkedin className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="sm" className="p-2">
+                      <Youtube className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
