@@ -109,7 +109,7 @@ const Contact = () => {
                   <Mail className="h-5 w-5 text-primary" />
                   <div>
                     <p className="font-medium">Email</p>
-                    <p className="text-muted-foreground">support@krishimarg.in</p>
+                    <p className="text-muted-foreground">krishimarg2025@gmail.com</p>
                   </div>
                 </div>
                 
@@ -125,21 +125,42 @@ const Contact = () => {
                 <div className="pt-6 border-t">
                   <p className="font-medium mb-4">Follow Us</p>
                   <div className="flex space-x-4">
-                    <Button variant="outline" size="sm" className="p-2">
-                      <Twitter className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" className="p-2">
-                      <Facebook className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" className="p-2">
-                      <Instagram className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" className="p-2">
-                      <Linkedin className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" className="p-2">
-                      <Youtube className="h-4 w-4" />
-                    </Button>
+                    <a
+                      href="https://x.com/KrishiMarg"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button variant="outline" size="sm" className="p-2">
+                        <Twitter className="h-4 w-4" />
+                      </Button>
+                    </a>
+                    <a
+                      href="https://www.instagram.com/krishimarg2025/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button variant="outline" size="sm" className="p-2">
+                        <Instagram className="h-4 w-4" />
+                      </Button>
+                    </a>
+                    <a
+                      href="https://www.linkedin.com/in/krishimarg-marg-25768b384/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button variant="outline" size="sm" className="p-2">
+                        <Linkedin className="h-4 w-4" />
+                      </Button>
+                    </a>
+                    <a
+                      href="https://www.youtube.com/@KrishiMarg-j6u6"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button variant="outline" size="sm" className="p-2">
+                        <Youtube className="h-4 w-4" />
+                      </Button>
+                    </a>
                   </div>
                 </div>
               </CardContent>
