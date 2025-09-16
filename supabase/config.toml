@@ -1,1 +1,55 @@
 project_id = "tptwduvipamegsdvgnrk"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[auth]
+enabled = true
+port = 54324
+external_url = "http://localhost:54324"
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["https://localhost:3000"]
+jwt_expiry = 3600
+enable_signup = true
+double_confirm_changes = true
+enable_manual_linking = false
+
+[storage]
+enabled = true
+port = 54325
+file_size_limit = "50MiB"
+feature_image_transformation = true
+
+[db]
+enabled = true
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+api_url = "http://localhost:54321"
+openai_api_key = "env(OPENAI_API_KEY)"
+
+[inbucket]
+enabled = true
+port = 54324
+smtp_port = 54325
+pop3_port = 54326
+
+[functions.weather-alerts]
+verify_jwt = true
+
+[functions.market-prices]
+verify_jwt = true
+
+[functions.disease-detect]
+verify_jwt = true
+
+[functions.send-alert]
+verify_jwt = true
