@@ -41,6 +41,36 @@ export type Database = {
         }
         Relationships: []
       }
+      soil_reports: {
+        Row: {
+          analysis: Json | null
+          created_at: string
+          id: string
+          language: string | null
+          ocr_text: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analysis?: Json | null
+          created_at?: string
+          id?: string
+          language?: string | null
+          ocr_text?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analysis?: Json | null
+          created_at?: string
+          id?: string
+          language?: string | null
+          ocr_text?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
