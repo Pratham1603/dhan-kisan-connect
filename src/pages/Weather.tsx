@@ -3,6 +3,9 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Cloud, 
   Sun, 
@@ -14,38 +17,22 @@ import {
   AlertTriangle,
   MapPin,
   Navigation,
-  Loader2
+  Loader2,
+  CloudSnow,
+  Zap
 } from "lucide-react";
 
 const Weather = () => {
-  const [location, setLocation] = useState("");
+  const { session } = useAuth();
+  const { toast } = useToast();
+  
+  const [location, setLocation] = useState<{name: string, lat: number, lon: number} | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [locationError, setLocationError] = useState("");
-  const [weatherData, setWeatherData] = useState({
-    current: {
-      temperature: 28,
-      humidity: 65,
-      windSpeed: 12,
-      visibility: 10,
-      condition: "Partly Cloudy",
-      icon: "partly-cloudy"
-    },
-    forecast: [
-      { day: "Today", high: 32, low: 24, condition: "Sunny", icon: "sunny", rain: 0 },
-      { day: "Tomorrow", high: 30, low: 22, condition: "Partly Cloudy", icon: "partly-cloudy", rain: 20 },
-      { day: "Wed", high: 28, low: 20, condition: "Rainy", icon: "rainy", rain: 80 },
-      { day: "Thu", high: 29, low: 21, condition: "Cloudy", icon: "cloudy", rain: 40 },
-      { day: "Fri", high: 31, low: 23, condition: "Sunny", icon: "sunny", rain: 0 },
-    ],
-    alerts: [
-      {
-        type: "warning",
-        title: "Heavy Rain Alert",
-        message: "Heavy rainfall expected in your area on Wednesday. Consider postponing outdoor farming activities.",
-        time: "2 hours ago"
-      }
-    ]
-  });
+  const [isLoadingWeather, setIsLoadingWeather] = useState(false);
+  const [currentWeather, setCurrentWeather] = useState<any>(null);
+  const [forecast, setForecast] = useState<any[]>([]);
+  const [alerts, setAlerts] = useState<any[]>([]);
 
   useEffect(() => {
     // Auto-detect location on page load
@@ -53,6 +40,11 @@ const Weather = () => {
   }, []);
 
   const detectLocation = () => {
+    if (!session) {
+      setLocationError("Please login to access weather data");
+      return;
+    }
+
     setIsLoadingLocation(true);
     setLocationError("");
     
@@ -60,30 +52,40 @@ const Weather = () => {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
+          
+          console.log(`GPS coordinates: ${latitude}, ${longitude}`);
+          
           try {
-            // In a real app, you would call OpenWeatherMap API here
-            // For demo, we'll just set a mock location
-            setLocation(`Lat: ${latitude.toFixed(2)}, Long: ${longitude.toFixed(2)}`);
-            // Simulate API call
-            setTimeout(() => {
-              setWeatherData(prev => ({
-                ...prev,
-                current: {
-                  ...prev.current,
-                  temperature: 29,
-                  condition: "Clear Sky"
-                }
-              }));
-              setIsLoadingLocation(false);
-            }, 2000);
+            await fetchWeatherData(latitude, longitude);
           } catch (error) {
+            console.error("Failed to fetch weather data:", error);
             setLocationError("Failed to fetch weather data");
             setIsLoadingLocation(false);
           }
         },
         (error) => {
-          setLocationError("Please enable location to see weather updates");
+          console.error("Geolocation error:", error);
+          let errorMessage = "Location access denied";
+          
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage = "Location access denied. Please enable location permissions in your browser.";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage = "Location information unavailable.";
+              break;
+            case error.TIMEOUT:
+              errorMessage = "Location request timed out.";
+              break;
+          }
+          
+          setLocationError(errorMessage);
           setIsLoadingLocation(false);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000 // 5 minutes
         }
       );
     } else {
@@ -92,14 +94,96 @@ const Weather = () => {
     }
   };
 
-  const getWeatherIcon = (iconType: string) => {
-    switch (iconType) {
-      case "sunny": return <Sun className="h-8 w-8 text-yellow-500" />;
-      case "partly-cloudy": return <Cloud className="h-8 w-8 text-gray-400" />;
-      case "cloudy": return <Cloud className="h-8 w-8 text-gray-500" />;
-      case "rainy": return <CloudRain className="h-8 w-8 text-blue-500" />;
-      default: return <Sun className="h-8 w-8 text-yellow-500" />;
+  const fetchWeatherData = async (lat: number, lon: number) => {
+    setIsLoadingWeather(true);
+    
+    try {
+      const authToken = session?.access_token;
+      
+      // Fetch current weather
+      const currentResponse = await supabase.functions.invoke('current-weather', {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: { lat, lon }
+      });
+      
+      if (currentResponse.error) {
+        throw new Error(currentResponse.error.message);
+      }
+      
+      const currentData = currentResponse.data;
+      setCurrentWeather(currentData.current);
+      setLocation({
+        name: currentData.location.name,
+        lat: currentData.location.lat,
+        lon: currentData.location.lon
+      });
+      
+      // Fetch forecast
+      const forecastResponse = await supabase.functions.invoke('forecast', {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: { lat, lon }
+      });
+      
+      if (forecastResponse.error) {
+        throw new Error(forecastResponse.error.message);
+      }
+      
+      setForecast(forecastResponse.data.forecast);
+      
+      // Fetch alerts
+      const alertsResponse = await supabase.functions.invoke('alerts', {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: { lat, lon }
+      });
+      
+      if (alertsResponse.data?.alerts) {
+        setAlerts(alertsResponse.data.alerts);
+      }
+      
+      toast({
+        title: "Weather Updated",
+        description: `Weather data loaded for ${currentData.location.name}`,
+      });
+      
+    } catch (error: any) {
+      console.error("Weather fetch error:", error);
+      setLocationError(error.message || "Failed to fetch weather data");
+      toast({
+        title: "Error",
+        description: "Failed to fetch weather data. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoadingLocation(false);
+      setIsLoadingWeather(false);
     }
+  };
+
+  const getWeatherIcon = (iconCode: string) => {
+    // OpenWeatherMap icon codes mapping
+    if (iconCode?.includes('01')) return <Sun className="h-8 w-8 text-yellow-500" />; // clear sky
+    if (iconCode?.includes('02')) return <Cloud className="h-8 w-8 text-gray-400" />; // few clouds
+    if (iconCode?.includes('03') || iconCode?.includes('04')) return <Cloud className="h-8 w-8 text-gray-500" />; // scattered/broken clouds
+    if (iconCode?.includes('09') || iconCode?.includes('10')) return <CloudRain className="h-8 w-8 text-blue-500" />; // shower rain/rain
+    if (iconCode?.includes('11')) return <Zap className="h-8 w-8 text-purple-500" />; // thunderstorm
+    if (iconCode?.includes('13')) return <CloudSnow className="h-8 w-8 text-blue-300" />; // snow
+    if (iconCode?.includes('50')) return <Cloud className="h-8 w-8 text-gray-300" />; // mist
+    
+    // Fallback based on condition text
+    const condition = iconCode?.toLowerCase();
+    if (condition?.includes('sun') || condition?.includes('clear')) return <Sun className="h-8 w-8 text-yellow-500" />;
+    if (condition?.includes('cloud')) return <Cloud className="h-8 w-8 text-gray-400" />;
+    if (condition?.includes('rain')) return <CloudRain className="h-8 w-8 text-blue-500" />;
+    if (condition?.includes('storm')) return <Zap className="h-8 w-8 text-purple-500" />;
+    if (condition?.includes('snow')) return <CloudSnow className="h-8 w-8 text-blue-300" />;
+    
+    return <Sun className="h-8 w-8 text-yellow-500" />; // default
   };
 
   return (
@@ -147,18 +231,21 @@ const Weather = () => {
             <CardContent>
               <div className="flex flex-col sm:flex-row gap-4 items-center">
                 <div className="flex-1">
-                  {isLoadingLocation ? (
+                  {isLoadingLocation || isLoadingWeather ? (
                     <div className="flex items-center space-x-2 text-muted-foreground">
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Detecting your location...</span>
+                      <span>{isLoadingLocation ? "Detecting your location..." : "Loading weather data..."}</span>
                     </div>
                   ) : location ? (
                     <div className="flex items-center space-x-2">
                       <MapPin className="h-4 w-4 text-primary" />
-                      <span className="font-medium">{location}</span>
+                      <span className="font-medium">{location.name}</span>
                       <Badge variant="outline" className="text-green-600">
                         GPS Active
                       </Badge>
+                      <span className="text-xs text-muted-foreground">
+                        ({location.lat.toFixed(3)}, {location.lon.toFixed(3)})
+                      </span>
                     </div>
                   ) : (
                     <div className="text-muted-foreground">
@@ -168,13 +255,13 @@ const Weather = () => {
                 </div>
                 <Button 
                   onClick={detectLocation}
-                  disabled={isLoadingLocation}
+                  disabled={isLoadingLocation || isLoadingWeather || !session}
                   className="bg-primary hover:bg-primary/90"
                 >
-                  {isLoadingLocation ? (
+                  {isLoadingLocation || isLoadingWeather ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Detecting...
+                      {isLoadingLocation ? "Detecting..." : "Loading..."}
                     </>
                   ) : (
                     <>
@@ -207,49 +294,55 @@ const Weather = () => {
             <CardDescription>Real-time conditions in your area</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="flex items-center space-x-4">
-                {getWeatherIcon(weatherData.current.icon)}
-                <div>
-                  <div className="text-3xl font-bold">{weatherData.current.temperature}°C</div>
-                  <div className="text-muted-foreground">{weatherData.current.condition}</div>
+            {currentWeather ? (
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="flex items-center space-x-4">
+                  {getWeatherIcon(currentWeather.icon)}
+                  <div>
+                    <div className="text-3xl font-bold">{currentWeather.temperature}°C</div>
+                    <div className="text-muted-foreground">{currentWeather.condition}</div>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Droplets className="h-5 w-5 text-blue-500" />
+                    <div>
+                      <div className="font-medium">{currentWeather.humidity}%</div>
+                      <div className="text-sm text-muted-foreground">Humidity</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Wind className="h-5 w-5 text-green-500" />
+                    <div>
+                      <div className="font-medium">{currentWeather.windSpeed} km/h</div>
+                      <div className="text-sm text-muted-foreground">Wind Speed</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Eye className="h-5 w-5 text-purple-500" />
+                    <div>
+                      <div className="font-medium">{currentWeather.visibility} km</div>
+                      <div className="text-sm text-muted-foreground">Visibility</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Thermometer className="h-5 w-5 text-red-500" />
+                    <div>
+                      <div className="font-medium">Feels like {currentWeather.feelsLike}°C</div>
+                      <div className="text-sm text-muted-foreground">Apparent Temp</div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center space-x-2">
-                  <Droplets className="h-5 w-5 text-blue-500" />
-                  <div>
-                    <div className="font-medium">{weatherData.current.humidity}%</div>
-                    <div className="text-sm text-muted-foreground">Humidity</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Wind className="h-5 w-5 text-green-500" />
-                  <div>
-                    <div className="font-medium">{weatherData.current.windSpeed} km/h</div>
-                    <div className="text-sm text-muted-foreground">Wind Speed</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Eye className="h-5 w-5 text-purple-500" />
-                  <div>
-                    <div className="font-medium">{weatherData.current.visibility} km</div>
-                    <div className="text-sm text-muted-foreground">Visibility</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Thermometer className="h-5 w-5 text-red-500" />
-                  <div>
-                    <div className="font-medium">Feels like 30°C</div>
-                    <div className="text-sm text-muted-foreground">Apparent Temp</div>
-                  </div>
-                </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <p>Detect your location to view current weather conditions</p>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
         </motion.div>
@@ -267,23 +360,29 @@ const Weather = () => {
               <CardDescription>Extended weather outlook</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {weatherData.forecast.map((day, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      {getWeatherIcon(day.icon)}
-                      <div>
-                        <div className="font-medium">{day.day}</div>
-                        <div className="text-sm text-muted-foreground">{day.condition}</div>
+              {forecast.length > 0 ? (
+                <div className="space-y-4">
+                  {forecast.map((day, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        {getWeatherIcon(day.icon)}
+                        <div>
+                          <div className="font-medium">{day.date}</div>
+                          <div className="text-sm text-muted-foreground">{day.condition}</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-medium">{day.high}°/{day.low}°</div>
+                        <div className="text-sm text-blue-500">{day.rainChance}% rain</div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="font-medium">{day.high}°/{day.low}°</div>
-                      <div className="text-sm text-blue-500">{day.rain}% rain</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>Detect your location to view 5-day forecast</p>
+                </div>
+              )}
             </CardContent>
           </Card>
           </motion.div>
@@ -304,25 +403,33 @@ const Weather = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {weatherData.alerts.map((alert, index) => (
-                  <div key={index} className="p-4 border border-warning/30 bg-warning/10 rounded-lg">
-                    <div className="flex items-start space-x-2">
-                      <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />
-                      <div className="flex-1">
-                        <h4 className="font-medium text-warning">{alert.title}</h4>
-                        <p className="text-sm text-muted-foreground mt-1">{alert.message}</p>
-                        <p className="text-xs text-muted-foreground mt-2">{alert.time}</p>
+                {alerts.length > 0 ? (
+                  alerts.map((alert, index) => (
+                    <div key={index} className="p-4 border border-warning/30 bg-warning/10 rounded-lg">
+                      <div className="flex items-start space-x-2">
+                        <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />
+                        <div className="flex-1">
+                          <h4 className="font-medium text-warning">{alert.title}</h4>
+                          <p className="text-sm text-muted-foreground mt-1">{alert.message}</p>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {new Date(alert.created_at).toLocaleString()}
+                          </p>
+                        </div>
                       </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>No weather alerts for your area</p>
                   </div>
-                ))}
+                )}
                 
                 {/* Farming Tips */}
                 <div className="p-4 bg-success/10 border border-success/30 rounded-lg">
                   <h4 className="font-medium text-success mb-2">Farming Tip</h4>
                   <p className="text-sm text-muted-foreground">
-                    With expected rainfall, it's a good time to prepare for pest management. 
-                    Check drainage systems and ensure proper field preparation.
+                    Monitor weather conditions regularly for optimal farming decisions. 
+                    GPS-based weather data provides the most accurate local forecasts.
                   </p>
                 </div>
               </div>
