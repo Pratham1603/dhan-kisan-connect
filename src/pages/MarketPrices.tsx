@@ -1,13 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { TrendingUp, TrendingDown, DollarSign, MapPin, Calendar } from "lucide-react";
 
 const MarketPrices = () => {
   const [selectedCrop, setSelectedCrop] = useState("");
-  const [selectedMandi, setSelectedMandi] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [priceData, setPriceData] = useState({
+    minPrice: "",
+    maxPrice: "",
+    modalPrice: ""
+  });
+
+  // Mock data for cities based on crop selection
+  const cropCities = {
+    rice: ["Delhi", "Punjab", "Haryana", "West Bengal", "Uttar Pradesh"],
+    wheat: ["Punjab", "Haryana", "Uttar Pradesh", "Madhya Pradesh", "Rajasthan"],
+    maize: ["Andhra Pradesh", "Karnataka", "Rajasthan", "Maharashtra", "Bihar"],
+    soybean: ["Madhya Pradesh", "Maharashtra", "Rajasthan", "Karnataka", "Telangana"],
+    sugarcane: ["Uttar Pradesh", "Maharashtra", "Karnataka", "Tamil Nadu", "Andhra Pradesh"],
+    cotton: ["Gujarat", "Maharashtra", "Telangana", "Andhra Pradesh", "Haryana"],
+    onion: ["Maharashtra", "Karnataka", "Gujarat", "Rajasthan", "Madhya Pradesh"],
+    tomato: ["Andhra Pradesh", "Karnataka", "West Bengal", "Odisha", "Maharashtra"]
+  };
+
+  // Mock available dates
+  const availableDates = ["2024-03-15", "2024-03-14", "2024-03-13", "2024-03-12", "2024-03-11"];
 
   const marketData = {
     rice: {
@@ -35,6 +57,28 @@ const MarketPrices = () => {
       lastUpdated: "3 hours ago"
     }
   };
+
+  // Effect to update prices when crop or city changes
+  useEffect(() => {
+    if (selectedCrop && selectedCity) {
+      // Mock API call - in real implementation, call Agmarknet API
+      const mockPrices = {
+        minPrice: Math.floor(Math.random() * 1000 + 1500).toString(),
+        maxPrice: Math.floor(Math.random() * 1000 + 2500).toString(),
+        modalPrice: Math.floor(Math.random() * 500 + 2000).toString()
+      };
+      setPriceData(mockPrices);
+    }
+  }, [selectedCrop, selectedCity]);
+
+  // Reset dependent fields when crop changes
+  useEffect(() => {
+    if (selectedCrop) {
+      setSelectedCity("");
+      setSelectedDate("");
+      setPriceData({ minPrice: "", maxPrice: "", modalPrice: "" });
+    }
+  }, [selectedCrop]);
 
   const recentPrices = [
     { crop: "Rice", price: "₹2,450", change: "+2.94%", trend: "up", mandi: "Delhi" },
@@ -65,23 +109,27 @@ const MarketPrices = () => {
           </p>
         </div>
 
-        {/* Search Section */}
+        {/* Smart Crop Advisory Section */}
         <Card className="mb-8 card-hover">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <DollarSign className="h-6 w-6 text-primary" />
-              <span>Find Market Prices</span>
+              <span>Smart Crop Advisory</span>
             </CardTitle>
+            <CardDescription>
+              Get real-time market data and pricing insights for informed decisions
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-3 gap-4">
-              <div>
-                <Label>Select Crop</Label>
-                <Select onValueChange={setSelectedCrop}>
-                  <SelectTrigger>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Select Crop */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Select Crop</Label>
+                <Select onValueChange={setSelectedCrop} value={selectedCrop}>
+                  <SelectTrigger className="h-11 shadow-sm border-muted-foreground/20 hover:border-primary/50 transition-colors">
                     <SelectValue placeholder="Choose crop" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-h-60">
                     <SelectItem value="rice">Rice</SelectItem>
                     <SelectItem value="wheat">Wheat</SelectItem>
                     <SelectItem value="maize">Maize</SelectItem>
@@ -94,29 +142,99 @@ const MarketPrices = () => {
                 </Select>
               </div>
 
-              <div>
-                <Label>Select Mandi</Label>
-                <Select onValueChange={setSelectedMandi}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose mandi" />
+              {/* Select City */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">City</Label>
+                <Select 
+                  onValueChange={setSelectedCity} 
+                  value={selectedCity}
+                  disabled={!selectedCrop}
+                >
+                  <SelectTrigger className="h-11 shadow-sm border-muted-foreground/20 hover:border-primary/50 transition-colors disabled:opacity-50">
+                    <SelectValue placeholder={selectedCrop ? "Choose city" : "Select crop first"} />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="delhi">Delhi</SelectItem>
-                    <SelectItem value="mumbai">Mumbai</SelectItem>
-                    <SelectItem value="punjab">Punjab</SelectItem>
-                    <SelectItem value="up">Uttar Pradesh</SelectItem>
-                    <SelectItem value="gujarat">Gujarat</SelectItem>
-                    <SelectItem value="maharashtra">Maharashtra</SelectItem>
+                  <SelectContent className="max-h-60">
+                    {selectedCrop && cropCities[selectedCrop as keyof typeof cropCities]?.map((city) => (
+                      <SelectItem key={city} value={city.toLowerCase()}>{city}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="flex items-end">
-                <Button className="w-full btn-hero">
-                  Get Prices
-                </Button>
+              {/* Select Date */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Date</Label>
+                <Select 
+                  onValueChange={setSelectedDate} 
+                  value={selectedDate}
+                  disabled={!selectedCrop}
+                >
+                  <SelectTrigger className="h-11 shadow-sm border-muted-foreground/20 hover:border-primary/50 transition-colors disabled:opacity-50">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    <SelectValue placeholder={selectedCrop ? "Choose date" : "Select crop first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableDates.map((date) => (
+                      <SelectItem key={date} value={date}>{new Date(date).toLocaleDateString()}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
+
+            {/* Price Fields */}
+            {selectedCrop && selectedCity && (
+              <div className="grid md:grid-cols-3 gap-6 mt-6 pt-6 border-t border-muted">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-success">Min Price</Label>
+                  <div className="relative">
+                    <Input 
+                      value={priceData.minPrice ? `₹${priceData.minPrice}` : ""} 
+                      placeholder="Loading..." 
+                      readOnly 
+                      className="h-11 shadow-sm bg-success/5 border-success/20 text-success font-medium"
+                    />
+                    <TrendingDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-success" />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-destructive">Max Price</Label>
+                  <div className="relative">
+                    <Input 
+                      value={priceData.maxPrice ? `₹${priceData.maxPrice}` : ""} 
+                      placeholder="Loading..." 
+                      readOnly 
+                      className="h-11 shadow-sm bg-destructive/5 border-destructive/20 text-destructive font-medium"
+                    />
+                    <TrendingUp className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-destructive" />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-primary">Modal Price</Label>
+                  <div className="relative">
+                    <Input 
+                      value={priceData.modalPrice ? `₹${priceData.modalPrice}` : ""} 
+                      placeholder="Loading..." 
+                      readOnly 
+                      className="h-11 shadow-sm bg-primary/5 border-primary/20 text-primary font-medium"
+                    />
+                    <DollarSign className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Get Advisory Button */}
+            {selectedCrop && selectedCity && (
+              <div className="mt-6 pt-6 border-t border-muted">
+                <Button className="w-full h-11 btn-hero text-base font-medium">
+                  <DollarSign className="mr-2 h-5 w-5" />
+                  Get Smart Advisory
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
 
