@@ -45,6 +45,15 @@ pop3_port = 54326
 [functions.weather-alerts]
 verify_jwt = true
 
+[functions.current-weather]
+verify_jwt = true
+
+[functions.forecast]
+verify_jwt = true
+
+[functions.alerts]
+verify_jwt = true
+
 [functions.market-prices]
 verify_jwt = true
 

@@ -71,12 +71,111 @@ export type Database = {
         }
         Relationships: []
       }
+      user_locations: {
+        Row: {
+          created_at: string
+          id: string
+          is_default: boolean | null
+          latitude: number
+          longitude: number
+          name: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          latitude: number
+          longitude: number
+          name: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          latitude?: number
+          longitude?: number
+          name?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      weather_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          location_key: string
+          message: string
+          severity: string
+          title: string
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          location_key: string
+          message: string
+          severity: string
+          title: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          location_key?: string
+          message?: string
+          severity?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      weather_cache: {
+        Row: {
+          created_at: string
+          data_type: string
+          expires_at: string
+          id: string
+          location_key: string
+          weather_data: Json
+        }
+        Insert: {
+          created_at?: string
+          data_type: string
+          expires_at: string
+          id?: string
+          location_key: string
+          weather_data: Json
+        }
+        Update: {
+          created_at?: string
+          data_type?: string
+          expires_at?: string
+          id?: string
+          location_key?: string
+          weather_data?: Json
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      clean_expired_weather_data: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
