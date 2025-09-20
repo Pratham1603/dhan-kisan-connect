@@ -175,10 +175,10 @@ serve(async (req) => {
       throw new Error('Invalid authentication token');
     }
 
-    // Parse query parameters
-    const url = new URL(req.url);
-    const lat = parseFloat(url.searchParams.get('lat') || '');
-    const lon = parseFloat(url.searchParams.get('lon') || '');
+  // Parse request body
+  const requestBody = await req.json();
+  const lat = parseFloat(requestBody.lat);
+  const lon = parseFloat(requestBody.lon);
 
     if (isNaN(lat) || isNaN(lon)) {
       throw new Error('Valid latitude and longitude are required');
