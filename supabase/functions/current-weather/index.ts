@@ -68,12 +68,12 @@ serve(async (req) => {
       throw new Error('Valid latitude and longitude are required');
     }
 
-    const locationKey = `${lat}_${lon}`;
+    const locationKey = `${lat.toFixed(4)}_${lon.toFixed(4)}`;
 
     // Check cache first
     const { data: cachedData } = await supabase
       .from('weather_cache')
-      .select('weather_data, expires_at')
+      .select('weather_data, expires_at, location_details')
       .eq('location_key', locationKey)
       .eq('data_type', 'current')
       .gt('expires_at', new Date().toISOString())
@@ -84,6 +84,37 @@ serve(async (req) => {
       return new Response(JSON.stringify(cachedData.weather_data), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    // Fetch detailed location information from geocoding
+    let locationDetails = null;
+    try {
+      const geocodingUrl = `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${openWeatherApiKey}`;
+      const geocodingResponse = await fetch(geocodingUrl);
+      
+      if (geocodingResponse.ok) {
+        const geocodingData = await geocodingResponse.json();
+        if (geocodingData && geocodingData.length > 0) {
+          const locationData = geocodingData[0];
+          const nameParts = [
+            locationData.name,
+            locationData.state !== locationData.name ? locationData.state : null,
+            locationData.country
+          ].filter(part => part && part.trim() !== '');
+
+          locationDetails = {
+            country: locationData.country || '',
+            state: locationData.state || '',
+            district: locationData.state || '',
+            city: locationData.name || '',
+            locality: locationData.local_names?.en || locationData.name || '',
+            village: '',
+            formatted_name: nameParts.join(', ')
+          };
+        }
+      }
+    } catch (geocodingError) {
+      console.error('Geocoding error (non-critical):', geocodingError);
     }
 
     // Fetch current weather from OpenWeatherMap
@@ -101,7 +132,7 @@ serve(async (req) => {
     // Transform the data to match our frontend structure
     const response: WeatherResponse = {
       location: {
-        name: weatherData.name,
+        name: locationDetails?.formatted_name || weatherData.name,
         lat: weatherData.coord.lat,
         lon: weatherData.coord.lon,
       },
@@ -127,6 +158,7 @@ serve(async (req) => {
         location_key: locationKey,
         data_type: 'current',
         weather_data: response,
+        location_details: locationDetails,
         expires_at: expiresAt.toISOString(),
       });
 

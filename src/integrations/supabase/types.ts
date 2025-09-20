@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      location_cache: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string
+          district: string | null
+          expires_at: string
+          formatted_name: string | null
+          id: string
+          lat: number
+          locality: string | null
+          location_key: string
+          lon: number
+          state: string | null
+          village: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          district?: string | null
+          expires_at?: string
+          formatted_name?: string | null
+          id?: string
+          lat: number
+          locality?: string | null
+          location_key: string
+          lon: number
+          state?: string | null
+          village?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          district?: string | null
+          expires_at?: string
+          formatted_name?: string | null
+          id?: string
+          lat?: number
+          locality?: string | null
+          location_key?: string
+          lon?: number
+          state?: string | null
+          village?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -146,6 +194,7 @@ export type Database = {
           data_type: string
           expires_at: string
           id: string
+          location_details: Json | null
           location_key: string
           weather_data: Json
         }
@@ -154,6 +203,7 @@ export type Database = {
           data_type: string
           expires_at: string
           id?: string
+          location_details?: Json | null
           location_key: string
           weather_data: Json
         }
@@ -162,6 +212,7 @@ export type Database = {
           data_type?: string
           expires_at?: string
           id?: string
+          location_details?: Json | null
           location_key?: string
           weather_data?: Json
         }
@@ -172,6 +223,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      clean_expired_location_data: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       clean_expired_weather_data: {
         Args: Record<PropertyKey, never>
         Returns: undefined
